@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
-public class PlayerController : MonoBehaviour {
+public class PlayerController : MonoSingleton<PlayerController> {
 
     public enum PlayerMode
     {
@@ -12,6 +13,9 @@ public class PlayerController : MonoBehaviour {
     public Sprite ElasticSprite;
     public Sprite HardSprite;
     public PhysicsMaterial2D BouncyMaterial;
+
+    private bool isGameStarted = false;
+    private int collectedStarCount = 0;
 
     public PlayerMode Mode;
 
@@ -28,11 +32,17 @@ public class PlayerController : MonoBehaviour {
 	void Update () {
 	    if (Input.GetMouseButtonDown(0))
 	    {
-	        SwitchMode();
-            UpdatePlayerMode();
+	        if (isGameStarted)
+	        {
+                SwitchMode();
+                UpdatePlayerMode();
+	            return;
+	        }
+	        isGameStarted = true;
+	        gameObject.GetComponent<Rigidbody2D>().gravityScale = 1.0f;
+	        var txt = GameObject.Find("txtTapToStart");
+            Destroy(txt);
 	    }
-
-        
 	}
 
     public void Init()
@@ -63,6 +73,12 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
+    public void CollectStar()
+    {
+        collectedStarCount++;
+        UIController.Instance.SetStars(collectedStarCount);
+    }
+
     void OnCollisionEnter2D(Collision2D col)
     {
         if (col.gameObject.tag == "Surface" && Mode == PlayerMode.Hard)
@@ -73,16 +89,28 @@ public class PlayerController : MonoBehaviour {
                 Destroy(col.gameObject);
                 gameObject.GetComponent<Rigidbody2D>().velocity = gameObject.GetComponent<Rigidbody2D>().velocity * 0.8f;
             }
+        }else if (col.gameObject.tag == "EndSurface")
+        {
+            SceneManager.LoadScene(Application.loadedLevelName);
         }
     }
 
     void OnCollisionStay2D(Collision2D col)
     {
-        Debug.Log("OnCollisionStay2D");
         if (col.gameObject.tag == "Button" && Mode == PlayerMode.Hard)
         {
+            Debug.Log("OpenGate");
             col.gameObject.GetComponent<ButtonController>().OpenGate();
             Destroy(col.gameObject);
+        }
+    }
+
+    void OnTriggerEnter2d(Collider2D col)
+    {
+        Debug.Log("OnTriggerEnter2d Player");
+        if (col.gameObject.tag == "Player")
+        {
+            Destroy(gameObject);
         }
     }
 }
