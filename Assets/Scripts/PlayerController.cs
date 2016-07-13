@@ -106,8 +106,10 @@ public class PlayerController : MonoSingleton<PlayerController> {
             UIController.Instance.ShowEndGameScreen(GameController.EndGameCondition.Win);
             GameController.Instance.EndGame();
         }
-        BounceAudioSources[rand.Next(2)].Play();
-        Debug.Log("PlayAudioSource");
+        else
+        {
+            BounceAudioSources[rand.Next(2)].Play();
+        }
     }
 
     void OnCollisionStay2D(Collision2D col)
