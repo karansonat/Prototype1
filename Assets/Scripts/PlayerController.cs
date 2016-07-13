@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoSingleton<PlayerController> {
@@ -13,6 +13,12 @@ public class PlayerController : MonoSingleton<PlayerController> {
     public Sprite ElasticSprite;
     public Sprite HardSprite;
     public PhysicsMaterial2D BouncyMaterial;
+    public List<AudioSource> BounceAudioSources;
+    public AudioSource StarAudioSource;
+    public AudioSource BreakAudioSource;
+    public AudioSource GateAudioSource;
+    public AudioSource TeleportAudioSource;
+    private System.Random rand = new System.Random();
 
     public int collectedStarCount = 0;
 
@@ -46,6 +52,7 @@ public class PlayerController : MonoSingleton<PlayerController> {
         UIController.Instance.SetStars(collectedStarCount);
         gameObject.GetComponent<Rigidbody2D>().gravityScale = 0;
         transform.position = new Vector3(0, 4.722f, 0);
+        
     }
 
     public void SwitchMode()
@@ -74,6 +81,7 @@ public class PlayerController : MonoSingleton<PlayerController> {
     {
         collectedStarCount++;
         UIController.Instance.SetStars(collectedStarCount);
+        StarAudioSource.Play();
     }
 
     void OnCollisionEnter2D(Collision2D col)
@@ -86,6 +94,7 @@ public class PlayerController : MonoSingleton<PlayerController> {
                 Physics2D.IgnoreCollision(gameObject.GetComponent<CircleCollider2D>(), col.gameObject.GetComponent<BoxCollider2D>());
                 Destroy(col.gameObject);
                 gameObject.GetComponent<Rigidbody2D>().velocity = gameObject.GetComponent<Rigidbody2D>().velocity * 0.8f;
+                BreakAudioSource.Play();
             }
         }else if (col.gameObject.tag == "FailSurface")
         {
@@ -97,6 +106,8 @@ public class PlayerController : MonoSingleton<PlayerController> {
             UIController.Instance.ShowEndGameScreen(GameController.EndGameCondition.Win);
             GameController.Instance.EndGame();
         }
+        BounceAudioSources[rand.Next(2)].Play();
+        Debug.Log("PlayAudioSource");
     }
 
     void OnCollisionStay2D(Collision2D col)
@@ -105,6 +116,7 @@ public class PlayerController : MonoSingleton<PlayerController> {
         {
             col.gameObject.GetComponent<ButtonController>().OpenGate();
             Destroy(col.gameObject);
+            GateAudioSource.Play();
         }
     }
 }

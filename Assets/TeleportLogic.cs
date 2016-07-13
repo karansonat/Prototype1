@@ -15,7 +15,7 @@ public class TeleportLogic : MonoBehaviour
         player.transform.position = locationHelperObj.position;
         var Vmagnitude = velocity.magnitude;
         player.GetComponent<Rigidbody2D>().velocity = ExitGate.transform.up * Vmagnitude;
-
+        PlayerController.Instance.TeleportAudioSource.Play();
     }
 
     void OnTriggerEnter2D(Collider2D col)

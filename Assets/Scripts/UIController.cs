@@ -120,10 +120,14 @@ public class UIController : MonoSingleton<UIController>
                         break;
                 }
                 LevelWon.gameObject.SetActive(true);
+                LevelWon.GetComponent<AudioSource>().Play();
                 break;
             case GameController.EndGameCondition.Lose:
                 LevelLost.gameObject.SetActive(true);
+                LevelLost.GetComponent<AudioSource>().Play();
                 break;
         }
     }
+
+
 }
