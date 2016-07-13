@@ -14,41 +14,38 @@ public class PlayerController : MonoSingleton<PlayerController> {
     public Sprite HardSprite;
     public PhysicsMaterial2D BouncyMaterial;
 
-    private bool isGameStarted = false;
     private int collectedStarCount = 0;
+
 
     public PlayerMode Mode;
 
     private float _elasticMass = 2.0f;
     private float _hardMass = 20.0f;
 
-    // Use this for initialization
-    void Start ()
-    {
-        Time.timeScale = 0.75f;
-    }
-	
 	// Update is called once per frame
 	void Update () {
 	    if (Input.GetMouseButtonDown(0))
 	    {
-	        if (isGameStarted)
+	        if (GameController.Instance.isGameStarted)
 	        {
                 SwitchMode();
                 UpdatePlayerMode();
 	            return;
 	        }
-	        isGameStarted = true;
+            GameController.Instance.isGameStarted = true;
 	        gameObject.GetComponent<Rigidbody2D>().gravityScale = 1.0f;
-	        var txt = GameObject.Find("txtTapToStart");
-            Destroy(txt);
+            UIController.Instance.HideTapToStartDialogue();
 	    }
 	}
 
     public void Init()
     {
         Mode = PlayerMode.Elastic;
-
+        UpdatePlayerMode();
+        collectedStarCount = 0;
+        UIController.Instance.SetStars(collectedStarCount);
+        gameObject.GetComponent<Rigidbody2D>().gravityScale = 0;
+        transform.position = new Vector3(0, 4.7f, 0);
     }
 
     public void SwitchMode()
@@ -85,13 +82,15 @@ public class PlayerController : MonoSingleton<PlayerController> {
         {
             if (col.gameObject.GetComponent<SurfaceConfig>().Destroyable)
             {
+                //TODO: Ignore Collision doesn't work in same frame. Fix it.
                 Physics2D.IgnoreCollision(gameObject.GetComponent<CircleCollider2D>(), col.gameObject.GetComponent<BoxCollider2D>());
                 Destroy(col.gameObject);
                 gameObject.GetComponent<Rigidbody2D>().velocity = gameObject.GetComponent<Rigidbody2D>().velocity * 0.8f;
             }
         }else if (col.gameObject.tag == "EndSurface")
         {
-            SceneManager.LoadScene(Application.loadedLevelName);
+            //TODO: End game screen should implement here.
+            GameController.Instance.Retry();
         }
     }
 
@@ -99,18 +98,8 @@ public class PlayerController : MonoSingleton<PlayerController> {
     {
         if (col.gameObject.tag == "Button" && Mode == PlayerMode.Hard)
         {
-            Debug.Log("OpenGate");
             col.gameObject.GetComponent<ButtonController>().OpenGate();
             Destroy(col.gameObject);
-        }
-    }
-
-    void OnTriggerEnter2d(Collider2D col)
-    {
-        Debug.Log("OnTriggerEnter2d Player");
-        if (col.gameObject.tag == "Player")
-        {
-            Destroy(gameObject);
         }
     }
 }
