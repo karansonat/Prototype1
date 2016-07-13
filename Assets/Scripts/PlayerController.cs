@@ -14,7 +14,7 @@ public class PlayerController : MonoSingleton<PlayerController> {
     public Sprite HardSprite;
     public PhysicsMaterial2D BouncyMaterial;
 
-    private int collectedStarCount = 0;
+    public int collectedStarCount = 0;
 
 
     public PlayerMode Mode;
@@ -87,10 +87,15 @@ public class PlayerController : MonoSingleton<PlayerController> {
                 Destroy(col.gameObject);
                 gameObject.GetComponent<Rigidbody2D>().velocity = gameObject.GetComponent<Rigidbody2D>().velocity * 0.8f;
             }
-        }else if (col.gameObject.tag == "EndSurface")
+        }else if (col.gameObject.tag == "FailSurface")
         {
-            //TODO: End game screen should implement here.
-            GameController.Instance.Retry();
+            UIController.Instance.ShowEndGameScreen(GameController.EndGameCondition.Lose);
+            GameController.Instance.EndGame();
+        }
+        else if (col.gameObject.tag == "Flag")
+        {
+            UIController.Instance.ShowEndGameScreen(GameController.EndGameCondition.Win);
+            GameController.Instance.EndGame();
         }
     }
 

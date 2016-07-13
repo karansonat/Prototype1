@@ -4,11 +4,18 @@ using System.Collections.Generic;
 
 public class GameController : MonoSingleton<GameController>
 {
+    public enum EndGameCondition
+    {
+        Win,
+        Lose
+    }
+
     public GameObject Player;
     public GameObject _activeLevel;
     public int _activeLevelNo;
-
+    public int LevelLimit;
     public bool isGameStarted = false;
+    
 
     // Use this for initialization
     void Start ()
@@ -52,10 +59,22 @@ public class GameController : MonoSingleton<GameController>
         isGameStarted = false;
     }
 
+    public void NextLevel()
+    {
+        if (_activeLevelNo + 1 <= LevelLimit)
+        {
+            LoadLevel(_activeLevelNo + 1);
+        }
+    }
+
     public void Retry()
     {
         UnLoadActiveLevel();
         LoadLevel(_activeLevelNo);
-        isGameStarted = false;
+    }
+
+    public void EndGame()
+    {
+        UnLoadActiveLevel();
     }
 }
