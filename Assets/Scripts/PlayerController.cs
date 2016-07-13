@@ -45,7 +45,7 @@ public class PlayerController : MonoSingleton<PlayerController> {
         collectedStarCount = 0;
         UIController.Instance.SetStars(collectedStarCount);
         gameObject.GetComponent<Rigidbody2D>().gravityScale = 0;
-        transform.position = new Vector3(0, 4.7f, 0);
+        transform.position = new Vector3(0, 4.722f, 0);
     }
 
     public void SwitchMode()

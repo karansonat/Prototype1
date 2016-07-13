@@ -26,6 +26,7 @@ public class GameController : MonoSingleton<GameController>
         if (_activeLevel)
         {
             _activeLevel.SetActive(false);
+            Destroy(_activeLevel);
             _activeLevel = null;
         }
         Player.SetActive(false);

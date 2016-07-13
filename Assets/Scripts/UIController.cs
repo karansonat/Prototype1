@@ -16,11 +16,6 @@ public class UIController : MonoSingleton<UIController>
 	    _starsGo = GameMenu.transform.FindChild("Stars").gameObject;
 	    _tapToStart = GameMenu.transform.FindChild("txtTapToStart").gameObject;
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 
     public void SwitchToMainMenu()
     {
